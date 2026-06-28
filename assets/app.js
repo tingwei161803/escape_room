@@ -303,7 +303,19 @@
 
       /* ---- map: Leaflet map + list (needs Leaflet on the page) ---- */
       map: function (p) {
+        var cats = (p.categories || []).map(function (c) {
+          return '<button class="chip" type="button" data-cat="' + esc(c.key) + '">' +
+            esc(c[L.state.lang] || c.en) + "</button>";
+        }).join("");
+        var allLabel = L.state.lang === "en" ? "All" : "全部";
         return head(p) +
+          '<div class="toolbar">' +
+            '<input id="search" class="search" type="search" autocomplete="off" ' +
+              'placeholder="' + (L.state.lang === "en" ? "Search studios…" : "搜尋工作室…") + '" ' +
+              'aria-label="' + (L.state.lang === "en" ? "Search" : "搜尋") + '" />' +
+            (cats ? '<div class="chips"><button class="chip chip--active" type="button" data-cat="">' + esc(allLabel) + "</button>" + cats + "</div>" : "") +
+          "</div>" +
+          '<p class="result-count" id="resultCount" aria-live="polite"></p>' +
           '<div class="map-layout">' +
             '<div class="map-box" id="map" role="application" aria-label="Map"></div>' +
             '<ul class="map-list" id="mapList"></ul>' +
@@ -413,10 +425,23 @@
         function openItem(slug) {
           var item = findItem(slug); if (!item) return;
           var dlg = L.dialog(), body = document.getElementById("dialogBody");
-          var tags = (item.tags || []).map(function (g) { return '<span class="tag">' + esc(g) + "</span>"; }).join("");
+          var tags = (item.tags || []).map(function (g) { return '<span class="tag">' + esc(tagStr(g)) + "</span>"; }).join("");
           body.innerHTML = '<h2 id="dialogTitle">' + esc(t(item.title)) + "</h2>" +
             (tags ? '<div class="card__tags">' + tags + "</div>" : "") +
             "<p>" + esc(t(item.overview) || t(item.summary)) + "</p>";
+          /* puzzles page: mount the matching playable mini-game below the prose */
+          if (L.currentSlug() === "puzzles" && window.MINIGAMES && window.MINIGAMES[slug]) {
+            var mgWrap = document.createElement("div");
+            mgWrap.className = "mg";
+            var mgHead = document.createElement("h3");
+            mgHead.className = "mg__head";
+            mgHead.textContent = L.state.lang === "en" ? "Try it" : "試玩看看";
+            mgWrap.appendChild(mgHead);
+            var mgHost = document.createElement("div");
+            mgWrap.appendChild(mgHost);
+            body.appendChild(mgWrap);
+            try { window.MINIGAMES[slug](mgHost, L); } catch (e) {}
+          }
           if (!dlg.open) dlg.showModal();
           if (location.hash.slice(1) !== slug) history.replaceState(null, "", "#" + slug);
         }
@@ -632,37 +657,69 @@
 
       map: function (p) {
         var listEl = document.getElementById("mapList");
+        var search = document.getElementById("search");
+        var count = document.getElementById("resultCount");
+        var chips = [].slice.call(pageEl.querySelectorAll(".chip"));
         var places = p.places || [];
-        listEl.innerHTML = places.map(function (pl) {
-          return '<li class="place" data-item data-slug="' + esc(pl.slug) + '" tabindex="0" role="button" ' +
-            'aria-label="' + esc(t(pl.name)) + '"><b>' + esc(t(pl.name)) + "</b>" +
-            '<span>' + esc(t(pl.body)) + "</span></li>";
-        }).join("");
+        var st = { q: "", cat: "" };
+        var hasLeaflet = !(typeof window.L === "undefined" || !window.L.map);
+        var map = null, markers = {};
 
-        if (typeof window.L === "undefined" || !window.L.map) {
+        if (hasLeaflet) {
+          map = window.L.map("map", { scrollWheelZoom: false });
+          window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap", maxZoom: 19
+          }).addTo(map);
+          places.forEach(function (pl) {
+            /* alt + title give Leaflet's marker <img role="button"> an accessible name */
+            markers[pl.slug] = window.L.marker([pl.lat, pl.lng], { alt: t(pl.name), title: t(pl.name), keyboard: true })
+              .bindPopup("<b>" + esc(t(pl.name)) + "</b><br>" + esc(t(pl.body)));
+          });
+          teardowns.push(function () { try { map.remove(); } catch (e) {} });
+        } else {
           // Leaflet not loaded (offline / blocked): list-only graceful fallback.
           document.getElementById("map").innerHTML =
             '<div class="map-fallback">' + esc(L.state.lang === "en" ? "Map unavailable offline — see the list." : "離線時地圖無法載入 — 請看清單。") + "</div>";
-          return;
         }
-        var map = window.L.map("map", { scrollWheelZoom: false });
-        window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "© OpenStreetMap", maxZoom: 19
-        }).addTo(map);
-        var markers = {}, group = [];
-        places.forEach(function (pl) {
-          /* alt + title give Leaflet's marker <img role="button"> an accessible name */
-          var m = window.L.marker([pl.lat, pl.lng], { alt: t(pl.name), title: t(pl.name), keyboard: true })
-            .addTo(map).bindPopup("<b>" + esc(t(pl.name)) + "</b><br>" + esc(t(pl.body)));
-          markers[pl.slug] = m; group.push([pl.lat, pl.lng]);
+
+        function matches(pl) {
+          if (st.cat && pl.category !== st.cat) return false;
+          if (!st.q) return true;
+          return (t(pl.name) + " " + t(pl.body)).toLowerCase().indexOf(st.q) !== -1;
+        }
+        function paint() {
+          var rows = places.filter(matches);
+          listEl.innerHTML = rows.map(function (pl) {
+            return '<li class="place" data-item data-slug="' + esc(pl.slug) + '" tabindex="0" role="button" ' +
+              'aria-label="' + esc(t(pl.name)) + '"><b>' + esc(t(pl.name)) + "</b>" +
+              '<span>' + esc(t(pl.body)) + "</span></li>";
+          }).join("");
+          if (count) count.textContent = rows.length + (L.state.lang === "en" ? " studio(s)" : " 間工作室");
+          if (hasLeaflet) {
+            var group = [];
+            places.forEach(function (pl) {
+              var m = markers[pl.slug]; if (!m) return;
+              if (matches(pl)) { m.addTo(map); group.push([pl.lat, pl.lng]); }
+              else { map.removeLayer(m); }
+            });
+            if (group.length) map.fitBounds(group, { padding: [30, 30] });
+          }
+          [].forEach.call(listEl.querySelectorAll(".place"), function (li) {
+            function go() { var m = markers[li.dataset.slug]; if (m && hasLeaflet) { map.panTo(m.getLatLng()); m.openPopup(); } }
+            li.addEventListener("click", go);
+            li.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+          });
+        }
+        if (search) search.addEventListener("input", function () { st.q = this.value.trim().toLowerCase(); paint(); });
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            chips.forEach(function (c) { c.classList.remove("chip--active"); });
+            chip.classList.add("chip--active");
+            st.cat = chip.dataset.cat || "";
+            paint();
+          });
         });
-        if (group.length) map.fitBounds(group, { padding: [30, 30] });
-        [].forEach.call(listEl.querySelectorAll(".place"), function (li) {
-          function go() { var m = markers[li.dataset.slug]; if (m) { map.panTo(m.getLatLng()); m.openPopup(); } }
-          li.addEventListener("click", go);
-          li.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
-        });
-        teardowns.push(function () { try { map.remove(); } catch (e) {} });
+        paint();
       },
 
       glossary: function (p) {
