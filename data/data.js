@@ -33,7 +33,7 @@ window.SITE_PAGES = [
                  zh: "16 種題型、16 類鎖具、49 個可試玩的小遊戲、產業數據與名店地圖——一座為玩家與創作者打造的密室百科。" },
       stats: [
         { value: 16, label: { en: "Puzzle types", zh: "遊戲題型" } },
-        { value: 49, label: { en: "Mini-games", zh: "互動小遊戲" } },
+        { value: 76, label: { en: "Mini-games", zh: "互動小遊戲" } },
         { value: 16, label: { en: "Lock families", zh: "鎖具分類" } },
         { value: 34, label: { en: "Glossary terms", zh: "術語詞條" } }
       ],
@@ -44,9 +44,9 @@ window.SITE_PAGES = [
     },
     highlights: [
       { icon: "extension", badge: { en: "Puzzles", zh: "題型" },
-        title: { en: "16 puzzle types, 49 mini-games", zh: "16 種題型,49 個小遊戲" },
-        body:  { en: "From sweep-searching and Caesar ciphers to mazes, UV reveals and circuit mechanisms — every sub-technique has a playable demo right in the page.",
-                 zh: "從地毯式搜索、凱撒密碼,到迷宮、UV 顯影、電路機關——每個子技法都能在頁面裡直接試玩。" }, href: "puzzles.html" },
+        title: { en: "16 puzzle types, 76 mini-games", zh: "16 種題型,76 個小遊戲" },
+        body:  { en: "From sweep-searching and Caesar ciphers to mazes, UV reveals and circuit mechanisms — every sub-technique has a playable demo with 4 difficulty levels.",
+                 zh: "從地毯式搜索、凱撒密碼,到迷宮、UV 顯影、電路機關——每個子技法都能直接試玩,還有 4 種難度。" }, href: "puzzles.html" },
       { icon: "lock", badge: { en: "Locks", zh: "鎖具" },
         title: { en: "16 lock & trigger families", zh: "16 類鎖具與觸發機關" },
         body:  { en: "What each lock looks like, how it opens, how many digits, and which clue feeds it — grouped by mechanism in a spec catalog.",
