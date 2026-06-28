@@ -50,7 +50,7 @@
     function itemTagsHtml(item) {
       return (item.tags || []).map(function (g) { return '<span class="tag">' + esc(tagStr(g)) + "</span>"; }).join("");
     }
-    /* mounts the puzzle mini-game tabs into the dialog body (puzzles page only) */
+    /* mounts the puzzle mini-game tabs + difficulty selector into the dialog (puzzles page) */
     function mountMinigames(body, slug) {
       if (L.currentSlug() !== "puzzles" || !window.MINIGAMES || !window.MINIGAMES[slug]) return;
       var games = window.MINIGAMES[slug]; if (!games || !games.length) return;
@@ -59,17 +59,30 @@
       hd.textContent = (L.state.lang === "en" ? "Try it" : "試玩看看") +
         (games.length > 1 ? (L.state.lang === "en" ? " · " + games.length + " mini-games" : " · " + games.length + " 個小遊戲") : "");
       wrap.appendChild(hd);
+      var gi = 0, diff = 2;
       var tabs = null;
       if (games.length > 1) {
         tabs = document.createElement("div"); tabs.className = "mg-subtabs";
-        games.forEach(function (g, gi) { var c = document.createElement("button"); c.type = "button"; c.className = "mg-subtab"; c.dataset.gi = gi; c.textContent = L.t(g.name); tabs.appendChild(c); });
+        games.forEach(function (g, idx) { var c = document.createElement("button"); c.type = "button"; c.className = "mg-subtab"; c.dataset.gi = idx; c.textContent = L.t(g.name); tabs.appendChild(c); });
         wrap.appendChild(tabs);
       }
+      /* difficulty selector — 4 levels, every game scales */
+      var labels = L.state.lang === "en" ? ["Easy", "Normal", "Hard", "Expert"] : ["簡單", "普通", "困難", "專家"];
+      var diffBar = document.createElement("div"); diffBar.className = "mg-diff";
+      var dl = document.createElement("span"); dl.className = "mg-diff__lbl"; dl.textContent = L.state.lang === "en" ? "Difficulty" : "難度"; diffBar.appendChild(dl);
+      labels.forEach(function (lab, i) { var b = document.createElement("button"); b.type = "button"; b.className = "mg-diff__btn"; b.dataset.diff = i + 1; b.textContent = lab; diffBar.appendChild(b); });
+      wrap.appendChild(diffBar);
       var host = document.createElement("div"); host.className = "mg-sub"; wrap.appendChild(host);
       body.appendChild(wrap);
-      function mount(gi) { host.innerHTML = ""; if (tabs) [].forEach.call(tabs.children, function (c, i) { c.classList.toggle("mg-subtab--active", i === gi); }); try { games[gi].build(host, L); } catch (e) {} }
-      if (tabs) [].forEach.call(tabs.children, function (c) { c.addEventListener("click", function () { mount(parseInt(c.dataset.gi, 10)); }); });
-      mount(0);
+      function mount() {
+        host.innerHTML = "";
+        if (tabs) [].forEach.call(tabs.children, function (c, i) { c.classList.toggle("mg-subtab--active", i === gi); });
+        [].forEach.call(diffBar.querySelectorAll(".mg-diff__btn"), function (b) { b.classList.toggle("mg-diff__btn--active", parseInt(b.dataset.diff, 10) === diff); });
+        try { games[gi].build(host, L, diff); } catch (e) {}
+      }
+      if (tabs) [].forEach.call(tabs.children, function (c) { c.addEventListener("click", function () { gi = parseInt(c.dataset.gi, 10); mount(); }); });
+      [].forEach.call(diffBar.querySelectorAll(".mg-diff__btn"), function (b) { b.addEventListener("click", function () { diff = parseInt(b.dataset.diff, 10); mount(); }); });
+      mount();
     }
     function openDetailDialog(item) {
       if (!item) return;
