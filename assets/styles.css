@@ -556,6 +556,77 @@ body {
   .mg-match { gap:14px; }
 }
 
+/* ===== sub-game tabs + expanded mini-game catalog ===== */
+.mg-subtabs { display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 14px; }
+.mg-subtab { padding:5px 11px; border:1px solid var(--outline-variant); border-radius:var(--radius-lg); background:var(--surface-container-high); color:var(--on-surface-variant); font:inherit; font-size:.78rem; font-weight:600; cursor:pointer; transition:background .15s,color .15s,border-color .15s; }
+.mg-subtab:hover { border-color:var(--primary); }
+.mg-subtab--active { background:var(--primary); color:var(--on-primary); border-color:transparent; }
+.mg-sub { min-height:60px; }
+
+/* decoder: key table + coded sequence */
+.mg-keytable { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:8px 0; }
+.mg-key { display:flex; flex-direction:column; align-items:center; gap:2px; min-width:46px; padding:6px 10px; border:1px solid var(--outline-variant); border-radius:var(--radius-sm); background:var(--surface-container-high); }
+.mg-key__sym { font-size:1.2rem; color:var(--on-surface); }
+.mg-key__val { font-size:.8rem; font-weight:700; color:var(--primary); font-family:var(--font-display); }
+.mg-coded { margin:10px 0; padding:12px; text-align:center; font-size:1.5rem; letter-spacing:.12em; word-break:break-word; background:var(--surface); border:1px dashed var(--outline-variant); border-radius:var(--radius); color:var(--on-surface); }
+
+/* binary bit switches */
+.mg-bits { display:flex; gap:8px; justify-content:center; margin-top:10px; }
+.mg-bit { display:flex; flex-direction:column; align-items:center; gap:2px; width:48px; padding:8px 0; border:1px solid var(--outline-variant); border-radius:var(--radius-sm); background:var(--surface); color:var(--on-surface-variant); cursor:pointer; }
+.mg-bit__v { font-size:.7rem; }
+.mg-bit__s { font-size:1.3rem; font-weight:700; font-family:var(--font-display); }
+.mg-bit--on { background:var(--primary); color:var(--on-primary); border-color:transparent; }
+.mg-bit--on .mg-bit__v,.mg-bit--on .mg-bit__s { color:var(--on-primary); }
+
+/* generic pick buttons */
+.mg-pick { padding:9px 14px; min-width:42px; border:1px solid var(--outline-variant); border-radius:var(--radius-sm); background:var(--surface-container-high); color:var(--on-surface); font:inherit; font-size:1rem; cursor:pointer; transition:background .15s,border-color .15s,transform .1s; }
+.mg-pick:hover:not(:disabled) { border-color:var(--primary); }
+.mg-pick:active { transform:scale(.97); }
+.mg-pick--ok { background:color-mix(in srgb,var(--success) 24%,var(--surface)); border-color:var(--success); }
+.mg-swatch { width:46px; height:46px; min-width:0; border-radius:var(--radius-sm); border:1px solid var(--outline-variant); }
+.mg-sync { min-width:74px; padding:14px 18px; font-size:1.1rem; font-weight:700; }
+.mg-board--pick { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; max-width:230px; margin:10px auto; }
+.mg-board--pick .mg-pick { aspect-ratio:1; display:grid; place-items:center; }
+
+/* highlighted-letters + punch-card mask */
+.mg-letters { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin:10px 0; font-size:1.4rem; font-family:var(--font-display); }
+.mg-letter { padding:2px 7px; color:var(--on-surface-variant); border-radius:4px; }
+.mg-hl { color:var(--primary); font-weight:700; background:color-mix(in srgb,var(--primary) 18%,var(--surface)); }
+.mg-mask { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; max-width:190px; margin:10px auto; }
+.mg-mask__cell { aspect-ratio:1; display:grid; place-items:center; background:var(--surface-container-high); border-radius:6px; font-weight:700; color:var(--on-surface); transition:opacity .2s,background .2s; }
+.mg-mask--on .mg-mask__cell { opacity:.12; }
+.mg-mask__cell--hole { opacity:1 !important; background:color-mix(in srgb,var(--primary) 26%,var(--surface)); color:var(--primary); }
+
+/* memory cards */
+.mg-mem-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-width:280px; margin:10px auto 0; }
+.mg-mem { position:relative; aspect-ratio:1; border:none; background:transparent; padding:0; cursor:pointer; }
+.mg-mem__back,.mg-mem__face { position:absolute; inset:0; display:grid; place-items:center; border-radius:var(--radius-sm); transition:opacity .15s; }
+.mg-mem__back { background:var(--surface-variant); border:1px solid var(--outline-variant); color:var(--on-surface-variant); font-size:1.3rem; }
+.mg-mem__face { background:var(--primary-container); color:var(--on-primary-container); font-size:1.6rem; opacity:0; }
+.mg-mem--up .mg-mem__face,.mg-mem--done .mg-mem__face { opacity:1; }
+.mg-mem--up .mg-mem__back,.mg-mem--done .mg-mem__back { opacity:0; }
+.mg-mem--done .mg-mem__face { background:color-mix(in srgb,var(--success) 28%,var(--surface)); }
+
+/* slider reach */
+.mg-slide { position:relative; height:72px; margin-top:10px; overflow:hidden; border:1px solid var(--outline-variant); border-radius:var(--radius); background:var(--surface-container-high); }
+.mg-slide__fill { position:absolute; left:0; top:0; bottom:0; width:0; background:color-mix(in srgb,var(--secondary) 32%,var(--surface)); transition:width .05s linear; }
+.mg-slide__prize { position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--primary); }
+.mg-slide__prize .material-symbols-rounded { font-size:28px; }
+.mg-slide__prize--got { color:var(--success); }
+.mg-range { width:100%; margin-top:10px; accent-color:var(--primary); }
+
+/* ghost-leg svg */
+.mg-ghostleg { display:block; width:100%; max-width:240px; height:auto; margin:8px auto; }
+.gl-line { stroke:var(--outline); stroke-width:2; }
+.gl-rung { stroke:var(--primary); stroke-width:3; }
+.gl-star { fill:var(--primary); font-size:18px; font-weight:700; }
+
+/* 2x2 jigsaw grid + mirror reveal */
+.mg-jig { display:grid; grid-template-columns:repeat(2,54px); gap:6px; justify-content:center; margin-top:10px; }
+.mg-uv--mirror { background:var(--surface-container-high); }
+.mg-uv--mirror .mg-uv__code { color:var(--on-surface); transform:scaleX(-1); transition:transform .25s; }
+.mg-uv--mirror.mg-uv--on .mg-uv__code { transform:scaleX(1); }
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion:reduce) {
   html { scroll-behavior:auto; }

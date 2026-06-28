@@ -429,18 +429,44 @@
           body.innerHTML = '<h2 id="dialogTitle">' + esc(t(item.title)) + "</h2>" +
             (tags ? '<div class="card__tags">' + tags + "</div>" : "") +
             "<p>" + esc(t(item.overview) || t(item.summary)) + "</p>";
-          /* puzzles page: mount the matching playable mini-game below the prose */
+          /* puzzles page: mount the playable mini-game(s) for this puzzle type.
+             A type can expose several sub-games (one per sub-technique) shown as tabs. */
           if (L.currentSlug() === "puzzles" && window.MINIGAMES && window.MINIGAMES[slug]) {
-            var mgWrap = document.createElement("div");
-            mgWrap.className = "mg";
-            var mgHead = document.createElement("h3");
-            mgHead.className = "mg__head";
-            mgHead.textContent = L.state.lang === "en" ? "Try it" : "試玩看看";
-            mgWrap.appendChild(mgHead);
-            var mgHost = document.createElement("div");
-            mgWrap.appendChild(mgHost);
-            body.appendChild(mgWrap);
-            try { window.MINIGAMES[slug](mgHost, L); } catch (e) {}
+            var games = window.MINIGAMES[slug];
+            if (games && games.length) {
+              var mgWrap = document.createElement("div");
+              mgWrap.className = "mg";
+              var mgHead = document.createElement("h3");
+              mgHead.className = "mg__head";
+              mgHead.textContent = (L.state.lang === "en" ? "Try it" : "試玩看看") +
+                (games.length > 1 ? (L.state.lang === "en" ? " · " + games.length + " mini-games" : " · " + games.length + " 個小遊戲") : "");
+              mgWrap.appendChild(mgHead);
+              var mgTabs = null;
+              if (games.length > 1) {
+                mgTabs = document.createElement("div");
+                mgTabs.className = "mg-subtabs";
+                games.forEach(function (g, gi) {
+                  var c = document.createElement("button");
+                  c.type = "button"; c.className = "mg-subtab"; c.dataset.gi = gi;
+                  c.textContent = L.t(g.name);
+                  mgTabs.appendChild(c);
+                });
+                mgWrap.appendChild(mgTabs);
+              }
+              var mgHost = document.createElement("div");
+              mgHost.className = "mg-sub";
+              mgWrap.appendChild(mgHost);
+              body.appendChild(mgWrap);
+              var mountGame = function (gi) {
+                mgHost.innerHTML = "";
+                if (mgTabs) [].forEach.call(mgTabs.children, function (c, i) { c.classList.toggle("mg-subtab--active", i === gi); });
+                try { games[gi].build(mgHost, L); } catch (e) {}
+              };
+              if (mgTabs) [].forEach.call(mgTabs.children, function (c) {
+                c.addEventListener("click", function () { mountGame(parseInt(c.dataset.gi, 10)); });
+              });
+              mountGame(0);
+            }
           }
           if (!dlg.open) dlg.showModal();
           if (location.hash.slice(1) !== slug) history.replaceState(null, "", "#" + slug);
