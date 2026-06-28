@@ -612,6 +612,26 @@
   /* helper for pickGame configs */
   function shapeGrid(diff) { return D(diff, ["mg-grid mg-grid--4", "mg-grid mg-grid--4", "mg-grid mg-grid--4", "mg-grid mg-grid--4"]); }
 
+  /* multiple-choice trivia; number of decoys scales with difficulty */
+  function triviaGame(o) {
+    return function (host, L, diff) {
+      badge(host, L, diff);
+      instr(host, L, o.instrEn, o.instrZh);
+      var wrongs = (L.state.lang === "en" ? o.wrongEn : o.wrongZh).slice();
+      var nWrong = D(diff, [2, 3, 4, Math.min(5, wrongs.length)]);
+      var opts = shuffle(wrongs).slice(0, nWrong).map(function (w) { return { t: w, ok: false }; });
+      opts.push({ t: L.state.lang === "en" ? o.correctEn : o.correctZh, ok: true });
+      shuffle(opts);
+      var box = mk("div", "mg-rp__opts");
+      opts.forEach(function (op) {
+        var b = mk("button", "mg-pick mg-rp__opt", op.t); b.type = "button";
+        b.addEventListener("click", function () { if (op.ok) { b.classList.add("mg-pick--ok"); win(host, L); } else { b.classList.add("mg-shake"); setTimeout(function () { b.classList.remove("mg-shake"); }, 400); } });
+        box.appendChild(b);
+      });
+      host.appendChild(box);
+    };
+  }
+
   /* =====================================================================
      CATALOG
      ===================================================================== */
@@ -765,6 +785,35 @@
     { id: "chain", name: nm("Chained code", "連鎖密碼"), build: multistepGame() },
     { id: "relay-math", name: nm("Relay maths", "接力計算"), build: multistepGame() }
   ];
+
+  /* === extra games (generated from content packs) === */
+  if (M["ciphers"]) M["ciphers"].push({ id:"nato", name:nm("NATO phonetic","北約字母"), build:decoderGame({instr:nm("Each NATO codeword stands for a letter. Decode the sequence.","每個北約代碼字代表一個字母,解出序列。"),keyLabel:nm("Codeword → letter","代碼字 → 字母"),pool:[["Alpha","A"],["Bravo","B"],["Charlie","C"],["Delta","D"],["Echo","E"],["Foxtrot","F"],["Golf","G"],["Hotel","H"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"greek", name:nm("Greek alphabet","希臘字母"), build:decoderGame({instr:nm("Each Greek letter maps to a Latin letter. Decode the word.","每個希臘字母對應一個拉丁字母,解出單字。"),keyLabel:nm("Greek → letter","希臘 → 字母"),pool:[["Α","A"],["Β","B"],["Γ","G"],["Δ","D"],["Ε","E"],["Κ","K"],["Π","P"],["Σ","S"],["Τ","T"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"braille", name:nm("Braille","點字"), build:decoderGame({instr:nm("Each Braille cell stands for a letter. Read the dots in order.","每個點字方格代表一個字母,依序讀出。"),keyLabel:nm("Braille → letter","點字 → 字母"),pool:[["⠁","A"],["⠃","B"],["⠉","C"],["⠙","D"],["⠑","E"],["⠋","F"],["⠛","G"],["⠓","H"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"roman", name:nm("Roman numerals","羅馬數字"), build:decoderGame({instr:nm("Each Roman numeral is a single digit. Read the code.","每個羅馬數字是一個位數,讀出密碼。"),keyLabel:nm("Roman → digit","羅馬 → 數字"),pool:[["Ⅰ","1"],["Ⅱ","2"],["Ⅲ","3"],["Ⅳ","4"],["Ⅴ","5"],["Ⅵ","6"],["Ⅶ","7"],["Ⅷ","8"],["Ⅸ","9"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"polybius-grid", name:nm("Polybius Square","波利比奧斯方陣"), build:decoderGame({instr:nm("Each pair of digits gives a grid coordinate in the 5x5 Polybius square.","每兩位數字代表 5x5 波利比奧斯方陣的座標。"),keyLabel:nm("row+col → letter","行+列 → 字母"),pool:[["11","A"],["15","E"],["24","I"],["31","L"],["34","O"],["43","S"],["44","T"],["45","U"],["52","W"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"t9-keypad", name:nm("Phone Keypad (T9)","電話鍵盤 T9"), build:decoderGame({instr:nm("Each letter maps to its phone key digit (ABC=2, DEF=3 …).","每個字母對應它在電話按鍵上的數字(ABC=2、DEF=3…)。"),keyLabel:nm("letter → key digit","字母 → 按鍵數字"),pool:[["A","2"],["D","3"],["G","4"],["J","5"],["M","6"],["P","7"],["T","8"],["W","9"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"resistor-colour", name:nm("Resistor Colour Code","電阻色碼"), build:decoderGame({instr:nm("Resistor colour bands encode digits. Match each colour to its value.","電阻色環代表數字,把每個顏色對應到它的數值。"),keyLabel:nm("colour → digit","顏色 → 數字"),pool:[["black","0"],["brown","1"],["red","2"],["orange","3"],["yellow","4"],["green","5"],["blue","6"],["violet","7"],["grey","8"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"tap-code", name:nm("Tap Code","敲擊密碼"), build:decoderGame({instr:nm("Tap code: dots before the dash = row, after = column on a 5x5 grid.","敲擊密碼:破折號前的點為行、後為列(5x5 格)。"),keyLabel:nm("taps → letter","敲擊 → 字母"),pool:[["·-·","A"],["·-···","C"],["···-·","K"],["···-···","M"],["····-····","S"],["·····-·","V"],["·····-··","W"]]}) });
+  if (M["matching"]) M["matching"].push({ id:"lock-open-01", name:nm("Lock & Key","鎖與解法"), build:matchGame({instr:nm("Match each lock type to how you open it.","把每種鎖連到它的開鎖方式。"),pairs:{en:[["Padlock","Numeric dial"],["Cylinder lock","Inserted key"],["Combination chain","3-number code"],["Magnetic lock","RFID card"],["Directional lock","Arrow sequence"],["Cryptex","Spell a word"]],zh:[["掛鎖","轉數字盤"],["圓筒鎖","插入鑰匙"],["密碼鏈鎖","三位數密碼"],["磁力鎖","感應卡"],["方向鎖","箭頭順序"],["字母密碼筒","拼出單字"]]}}) });
+  if (M["matching"]) M["matching"].push({ id:"puzzle-skill-01", name:nm("Puzzle & Skill","謎題與技能"), build:matchGame({instr:nm("Match each puzzle type to the skill it tests.","把每種謎題連到它考驗的能力。"),pairs:{en:[["Jigsaw","Spatial sense"],["Riddle","Lateral thinking"],["Math lock","Calculation"],["Maze","Pathfinding"],["Memory tiles","Recall"],["Cipher wheel","Decoding"]],zh:[["拼圖","空間感"],["謎語","橫向思考"],["數學鎖","運算"],["迷宮","找路徑"],["記憶翻牌","記憶力"],["密碼轉盤","解碼"]]}}) });
+  if (M["matching"]) M["matching"].push({ id:"tool-use-01", name:nm("Tool & Use","道具與用途"), build:matchGame({instr:nm("Match each escape-room prop to its use.","把每個密室道具連到它的用途。"),pairs:{en:[["UV flashlight","Reveal hidden ink"],["Magnet","Grab metal key"],["Mirror","Redirect light beam"],["Magnifier","Read tiny text"],["Tweezers","Pick small clue"],["Decoder card","Filter color code"]],zh:[["紫外線手電筒","顯現隱形墨水"],["磁鐵","吸取金屬鑰匙"],["鏡子","反射光束"],["放大鏡","看清小字"],["鑷子","夾取小線索"],["濾色卡","過濾顏色密碼"]]}}) });
+  if (M["matching"]) M["matching"].push({ id:"cipher-example-01", name:nm("Cipher & Example","密碼與範例"), build:matchGame({instr:nm("Match each cipher to its example output.","把每種密碼連到它的範例。"),pairs:{en:[["Morse code","···"],["Caesar +1","HI→IJ"],["Binary","01000001"],["Pigpen","shapes"],["Atbash","A↔Z"],["Braille","⠁ dots"]],zh:[["摩斯密碼","···"],["凱撒位移 +1","HI→IJ"],["二進位","01000001"],["豬圈密碼","圖形"],["埃特巴什碼","A↔Z"],["點字","⠁ 凸點"]]}}) });
+  if (M["hidden-text"]) M["hidden-text"].push({ id:"acr-clue", name:nm("Clue Hunt","線索追蹤"), build:acrosticGame({en:["Check every corner of the dark room","Look behind the dusty oil painting","Under the rug a key was hidden","Each clue points toward the exit","Search the desk for a folded map","Time is running out so hurry"],zh:["線頭藏在油畫的背面","索性把抽屜全部拉開","解開銅鎖需要三位數","謎題提示就刻在牆上","真相只差最後一塊拼圖","相信直覺找到出口吧"]}) });
+  if (M["hidden-text"]) M["hidden-text"].push({ id:"acr-unlock", name:nm("Unlock Door","開啟暗門"), build:acrosticGame({en:["Under the floorboard lies a code","Notice the symbols on the lock","Light the candle to reveal ink","Open the drawer with the brass key","Counting the bells gives the number","Keep calm and trust the pattern"],zh:["開門之前先找齊鑰匙","啟動機關要按對順序","暗格裡藏著半張地圖","門後傳來滴答的鐘聲","逃離房間只剩五分鐘","脫困關鍵就在你手中"]}) });
+  if (M["hidden-text"]) M["hidden-text"].push({ id:"acr-cipher", name:nm("Cipher Box","密碼寶盒"), build:acrosticGame({en:["Carefully read the torn letter again","Inside the clock a gear turns slow","Press the third tile on the wall","Hold the mirror against the candle","Each digit unlocks one iron latch","Reach the safe before midnight strikes"],zh:["密信被撕成了兩半","碼表停在奇怪的數字","破譯需要對照鏡像","解讀牆上的古老符號","寶箱鎖孔形狀很特別","盒底刻著最終答案"]}) });
+  if (M["hidden-text"]) M["hidden-text"].push({ id:"acr-secret", name:nm("Secret Vault","秘密金庫"), build:acrosticGame({en:["Slide the bookcase to find a passage","Examine the portraits hidden eyes","Count the candles on the old altar","Read the diary left by the warden","Every lever must be pulled in order","Trace the chalk lines to the vault"],zh:["秘道藏在書架後方","密室牆上有暗號","金鑰需要兩塊拼合","庫房深處傳出回聲","入口被機關緊緊鎖住","口令說出便能脫身"]}) });
+  if (M["hidden-text"]) M["hidden-text"].push({ id:"acr-puzzle", name:nm("Puzzle Lock","解謎機關"), build:acrosticGame({en:["Pick up the rusty iron ring first","Uncover the riddle beneath the dust","Zigzag wires connect the two locks","Zero the dials then pull the lever","Look closely at the painted clock","Escape once the final tile clicks"],zh:["解開第一道銅製暗鎖","謎面就寫在泛黃紙上","機簧需要同時轉動","關卡盡頭藏著鑰匙","出題者留下狡猾陷阱","口訣念對門就打開"]}) });
+  if (M["logic"]) M["logic"].push({ id:"trv-dpad-lock", name:nm("Directional Lock","方向鎖"), build:triviaGame({instrEn:"Which lock opens with a sequence of up/down/left/right movements?",instrZh:"哪一種鎖是用上下左右的方向序列開啟的?",correctEn:"Directional lock",correctZh:"方向鎖",wrongEn:["Combination padlock","Cylinder key lock","Word lock","Magnetic lock","Fingerprint lock"],wrongZh:["數字密碼鎖","鑰匙圓筒鎖","字母單字鎖","磁力鎖","指紋鎖"]}) });
+  if (M["logic"]) M["logic"].push({ id:"trv-uv-reveal", name:nm("UV Light Clue","紫外光線索"), build:triviaGame({instrEn:"What does a UV blacklight typically reveal in an escape room?",instrZh:"在密室中,紫外光通常會顯現出什麼?",correctEn:"Hidden fluorescent writing",correctZh:"隱藏的螢光字跡",wrongEn:["Heat from footprints","Magnetic fields","Sound vibrations","X-ray of locks","Wi-Fi signals"],wrongZh:["腳印的熱能","磁場","聲音震動","鎖的X光影像","Wi-Fi 訊號"]}) });
+  if (M["logic"]) M["logic"].push({ id:"trv-morse-code", name:nm("Dots and Dashes","點與劃"), build:triviaGame({instrEn:"Which code represents letters using dots and dashes?",instrZh:"哪一種密碼是用點和劃來代表字母的?",correctEn:"Morse code",correctZh:"摩斯密碼",wrongEn:["Braille","Caesar cipher","Binary code","Semaphore","Pigpen cipher"],wrongZh:["點字","凱撒密碼","二進位碼","旗語","豬圈密碼"]}) });
+  if (M["logic"]) M["logic"].push({ id:"trv-red-herring", name:nm("Red Herring","誤導線索"), build:triviaGame({instrEn:"In a puzzle, what is a red herring?",instrZh:"在解謎中,「紅鯡魚」是指什麼?",correctEn:"A misleading false clue",correctZh:"誤導人的假線索",wrongEn:["The final key","A hidden compartment","The fastest team","A bonus hint","A timed trap"],wrongZh:["最終鑰匙","隱藏暗格","最快的隊伍","額外提示","限時陷阱"]}) });
+  if (M["logic"]) M["logic"].push({ id:"trv-first-move", name:nm("First Move","第一步"), build:triviaGame({instrEn:"What is the best first move when entering a new escape room?",instrZh:"進入新密室時,最好的第一步是什麼?",correctEn:"Search the whole room",correctZh:"先搜遍整個房間",wrongEn:["Force open every lock","Wait for a hint","Split up and hide","Solve clues alone","Skip easy puzzles"],wrongZh:["強行撬開每把鎖","等待提示","分頭躲起來","獨自解線索","跳過簡單謎題"]}) });
+  if (M["logic"]) M["logic"].push({ id:"trv-4digit", name:nm("4-Digit Combos","四位數組合"), build:triviaGame({instrEn:"How many combinations does a 4-digit (0-9) padlock have?",instrZh:"一個四位數(0-9)密碼鎖共有多少組合?",correctEn:"10000",correctZh:"10000",wrongEn:["1000","9999","40","256","100000"],wrongZh:["1000","9999","40","256","100000"]}) });
+  if (M["audio"]) M["audio"].push({ id:"solfege-scale", name:nm("Solfège scale","唱名音階"), build:decoderGame({instr:nm("Turn each solfège syllable into its scale-degree number.","把每個唱名換成它在音階上的級數數字。"),keyLabel:nm("Solfège → degree","唱名 → 級數"),pool:[["Do","1"],["Re","2"],["Mi","3"],["Fa","4"],["Sol","5"],["La","6"],["Si","7"]]}) });
+  if (M["audio"]) M["audio"].push({ id:"drum-taps", name:nm("Drum taps","鼓點拍數"), build:decoderGame({instr:nm("Count the taps in each drum beat and write the number.","數每組鼓點的拍數,寫下對應的數字。"),keyLabel:nm("Taps → count","鼓點 → 拍數"),pool:[["▪","1"],["▪▪","2"],["▪▪▪","3"],["▪▪▪▪","4"],["▪▪▪▪▪","5"],["▪▪▪▪▪▪","6"],["▪▪▪▪▪▪▪","7"],["▪▪▪▪▪▪▪▪","8"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"shichen-hours", name:nm("Zodiac hours","十二時辰"), build:decoderGame({instr:nm("Each Earthly Branch marks a double-hour; write its order number.","每個地支代表一個時辰,寫下它的排序數字。"),keyLabel:nm("Branch → hour","時辰 → 序號"),pool:[["子","1"],["丑","2"],["寅","3"],["卯","4"],["辰","5"],["巳","6"],["午","7"],["未","8"]]}) });
+  if (M["ciphers"]) M["ciphers"].push({ id:"tiangan-stems", name:nm("Heavenly Stems","天干"), build:decoderGame({instr:nm("Each Heavenly Stem has a fixed order; write its number.","每個天干都有固定順序,寫下它的數字。"),keyLabel:nm("Stem → order","天干 → 序號"),pool:[["甲","1"],["乙","2"],["丙","3"],["丁","4"],["戊","5"],["己","6"],["庚","7"],["辛","8"],["壬","9"]]}) });
 
   window.MINIGAMES = M;
 })();
