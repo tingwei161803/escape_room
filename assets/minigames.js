@@ -6,7 +6,7 @@
    only). Games are built from reusable factories so each sub-technique gets its
    own demo. Everything is vanilla, zero-build, bilingual (reads L.state.lang),
    and EPHEMERAL (state lives in the open dialog; resets on reload/lang switch).
-   All visible strings are inline literals built with textContent / static
+   All visible strings are inline literals rendered via textContent / static
    markup — no data-derived value reaches innerHTML, so there is no XSS path.
    ========================================================================= */
 (function () {

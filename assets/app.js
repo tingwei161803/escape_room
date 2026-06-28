@@ -38,6 +38,68 @@
         ? '<p class="page-head__sub">' + esc(t(p.subtitle)) + "</p>" : "";
       return '<header class="page-head"><h1>' + esc(t(p.title)) + "</h1>" + sub + "</header>";
     }
+    /* editorial section head (eyebrow + big title + lead) */
+    function edHead(eyebrow, p) {
+      return '<header class="ed-head reveal"><p class="ed-eyebrow">' + esc(eyebrow) + "</p>" +
+        '<h1 class="ed-head__title">' + esc(t(p.title)) + "</h1>" +
+        (t(p.subtitle) ? '<p class="ed-head__lead">' + esc(t(p.subtitle)) + "</p>" : "") + "</header>";
+    }
+
+    /* ---------- shared detail dialog (gallery / catalog / spec reuse this) ---------- */
+    function tagStr(g) { return (g && typeof g === "object") ? t(g) : g; }
+    function itemTagsHtml(item) {
+      return (item.tags || []).map(function (g) { return '<span class="tag">' + esc(tagStr(g)) + "</span>"; }).join("");
+    }
+    /* mounts the puzzle mini-game tabs into the dialog body (puzzles page only) */
+    function mountMinigames(body, slug) {
+      if (L.currentSlug() !== "puzzles" || !window.MINIGAMES || !window.MINIGAMES[slug]) return;
+      var games = window.MINIGAMES[slug]; if (!games || !games.length) return;
+      var wrap = document.createElement("div"); wrap.className = "mg";
+      var hd = document.createElement("h3"); hd.className = "mg__head";
+      hd.textContent = (L.state.lang === "en" ? "Try it" : "試玩看看") +
+        (games.length > 1 ? (L.state.lang === "en" ? " · " + games.length + " mini-games" : " · " + games.length + " 個小遊戲") : "");
+      wrap.appendChild(hd);
+      var tabs = null;
+      if (games.length > 1) {
+        tabs = document.createElement("div"); tabs.className = "mg-subtabs";
+        games.forEach(function (g, gi) { var c = document.createElement("button"); c.type = "button"; c.className = "mg-subtab"; c.dataset.gi = gi; c.textContent = L.t(g.name); tabs.appendChild(c); });
+        wrap.appendChild(tabs);
+      }
+      var host = document.createElement("div"); host.className = "mg-sub"; wrap.appendChild(host);
+      body.appendChild(wrap);
+      function mount(gi) { host.innerHTML = ""; if (tabs) [].forEach.call(tabs.children, function (c, i) { c.classList.toggle("mg-subtab--active", i === gi); }); try { games[gi].build(host, L); } catch (e) {} }
+      if (tabs) [].forEach.call(tabs.children, function (c) { c.addEventListener("click", function () { mount(parseInt(c.dataset.gi, 10)); }); });
+      mount(0);
+    }
+    function openDetailDialog(item) {
+      if (!item) return;
+      var dlg = L.dialog(), body = document.getElementById("dialogBody");
+      var tags = itemTagsHtml(item);
+      body.innerHTML = '<h2 id="dialogTitle">' + esc(t(item.title)) + "</h2>" +
+        (tags ? '<div class="card__tags">' + tags + "</div>" : "") +
+        "<p>" + esc(t(item.overview) || t(item.summary)) + "</p>";
+      mountMinigames(body, item.slug);
+      if (!dlg.open) dlg.showModal();
+      if (location.hash.slice(1) !== item.slug) history.replaceState(null, "", "#" + item.slug);
+    }
+    /* wire any [data-slug] node on the page to open the detail dialog + deep-link */
+    function wireDetailItems(items) {
+      function findItem(slug) { for (var i = 0; i < items.length; i++) if (items[i].slug === slug) return items[i]; return null; }
+      function openItem(slug) { openDetailDialog(findItem(slug)); }
+      [].forEach.call(pageEl.querySelectorAll("[data-slug]"), function (el) {
+        var slug = el.dataset.slug;
+        el.addEventListener("click", function () { openItem(slug); });
+        el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openItem(slug); } });
+      });
+      var dlg = L.dialog();
+      function onClose() { var slug = location.hash.slice(1); if (slug && findItem(slug)) history.replaceState(null, "", location.pathname + location.search); }
+      function syncHash() { var slug = location.hash.slice(1); if (slug && findItem(slug)) openItem(slug); }
+      dlg.addEventListener("close", onClose);
+      var onHash = function () { syncHash(); };
+      window.addEventListener("hashchange", onHash);
+      teardowns.push(function () { window.removeEventListener("hashchange", onHash); dlg.removeEventListener("close", onClose); });
+      syncHash();
+    }
 
     function barChart(series, accent) {
       var W = 520, H = 240, padL = 16, padR = 16, padT = 16, padB = 44;
@@ -371,6 +433,123 @@
         return head(p) +
           '<p class="result-count">' + esc(hint) + "</p>" +
           '<div class="flash-grid">' + cards + "</div>";
+      },
+
+      /* ---- home: immersive editorial landing (hero + features + explore + quote) ---- */
+      home: function (p) {
+        var h = p.hero || {};
+        var stats = (h.stats || []).map(function (s) {
+          return '<div class="ed-hero__stat"><b data-count="' + esc(String(s.value)) + '"' +
+            (s.suffix ? ' data-suffix="' + esc(s.suffix) + '"' : "") + '>0</b><span>' + esc(t(s.label)) + "</span></div>";
+        }).join("");
+        var cta = (h.cta || []).map(function (c) {
+          return '<a class="ed-btn' + (c.primary ? " ed-btn--primary" : "") + '" href="' + esc(c.href) + '">' + esc(t(c.label)) + "</a>";
+        }).join("");
+        var hero = '<header class="ed-hero">' +
+          '<div class="ed-hero__glow" aria-hidden="true"></div><div class="ed-hero__key" aria-hidden="true"></div>' +
+          '<div class="ed-hero__inner">' +
+            (t(h.eyebrow) ? '<p class="ed-eyebrow">' + esc(t(h.eyebrow)) + "</p>" : "") +
+            '<h1 class="ed-hero__title">' + esc(t(h.title || p.title)) + (t(h.accent) ? ' <em>' + esc(t(h.accent)) + "</em>" : "") + "</h1>" +
+            (t(h.lead) ? '<p class="ed-hero__lead">' + esc(t(h.lead)) + "</p>" : "") +
+            (stats ? '<div class="ed-hero__stats">' + stats + "</div>" : "") +
+            (cta ? '<div class="ed-hero__cta">' + cta + "</div>" : "") +
+            '<span class="ed-cue">' + (L.state.lang === "en" ? "Scroll to explore" : "向下探索") +
+              ' <span class="material-symbols-rounded" aria-hidden="true">arrow_downward</span></span>' +
+          "</div></header>";
+        var feats = (p.highlights || []).map(function (f) {
+          return '<article class="ed-feature reveal" data-item>' +
+            '<figure class="ed-feature__media">' + (t(f.badge) ? '<figcaption class="ed-feature__badge">' + esc(t(f.badge)) + "</figcaption>" : "") +
+              '<span class="material-symbols-rounded ed-feature__icon" aria-hidden="true">' + esc(f.icon || "extension") + "</span></figure>" +
+            '<div class="ed-feature__body">' +
+              '<h2 class="ed-feature__title">' + esc(t(f.title)) + "</h2>" +
+              '<p class="ed-feature__text">' + esc(t(f.body)) + "</p>" +
+              (f.href ? '<a class="ed-link" href="' + esc(f.href) + '">' + (L.state.lang === "en" ? "Explore" : "看更多") +
+                ' <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span></a>' : "") +
+            "</div></article>";
+        }).join("");
+        var featuresSection = feats ? '<section class="ed-section ed-wrap"><div class="ed-features">' + feats + "</div></section>" : "";
+        var explore = (p.explore || []).map(function (g) {
+          var lead = g.lead ? '<a class="ed-index__lead" href="' + esc(g.lead.href) + '"><b>' + esc(t(g.lead.title)) +
+            "</b><span>" + esc(t(g.lead.sub)) + '</span><span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span></a>' : "";
+          var links = '<ul class="ed-index__list">' + (g.links || []).map(function (l) {
+            return '<li><a href="' + esc(l.href) + '"><span>' + esc(t(l.title)) + '</span> <span class="material-symbols-rounded" aria-hidden="true">chevron_right</span></a></li>';
+          }).join("") + "</ul>";
+          return '<div class="ed-index__group" data-item>' + (t(g.eyebrow) ? '<p class="ed-eyebrow">' + esc(t(g.eyebrow)) + "</p>" : "") + lead + links + "</div>";
+        }).join("");
+        var exploreSection = explore ? '<section class="ed-section ed-wrap" id="explore">' +
+          '<header class="ed-head reveal"><p class="ed-eyebrow">' + (L.state.lang === "en" ? "Explore" : "探索全站") + "</p>" +
+          '<h2 class="ed-head__title">' + (L.state.lang === "en" ? "Browse every corner of the codex" : "逐區瀏覽整座知識庫") + "</h2></header>" +
+          '<nav class="ed-index reveal" aria-label="' + (L.state.lang === "en" ? "Explore" : "探索") + '">' + explore + "</nav></section>" : "";
+        var quote = p.quote ? '<aside class="ed-band reveal"><div class="ed-band__inner ed-quote"><p>' +
+          esc(t(p.quote.text)) + "</p><cite>" + esc(t(p.quote.cite)) + "</cite></div></aside>" : "";
+        return hero + featuresSection + '<hr class="ed-rule">' + exploreSection + quote;
+      },
+
+      /* ---- editorial: alternating zig-zag feature blocks (themes) ---- */
+      editorial: function (p) {
+        var items = (p.items || []).map(function (it, i) {
+          var tags = (it.tags || []).map(function (g) { return '<span class="tag">' + esc(tagStr(g)) + "</span>"; }).join("");
+          return '<article class="ed-feature reveal" data-item>' +
+            '<figure class="ed-feature__media"><figcaption class="ed-feature__badge">' + (i < 9 ? "0" : "") + (i + 1) + "</figcaption>" +
+              '<span class="material-symbols-rounded ed-feature__icon" aria-hidden="true">' + esc(it.icon || "theater_comedy") + "</span></figure>" +
+            '<div class="ed-feature__body">' +
+              '<h2 class="ed-feature__title">' + esc(t(it.title)) + "</h2>" +
+              (t(it.summary) ? '<p class="ed-feature__text" style="color:var(--on-surface)">' + esc(t(it.summary)) + "</p>" : "") +
+              '<p class="ed-feature__text">' + esc(t(it.overview) || "") + "</p>" +
+              (tags ? '<div class="card__tags">' + tags + "</div>" : "") +
+            "</div></article>";
+        }).join("");
+        return '<div class="ed-wrap ed-section">' + edHead(L.state.lang === "en" ? "Genres & formats" : "主題與形式", p) +
+          '<div class="ed-features">' + items + "</div></div>";
+      },
+
+      /* ---- catalog: category-grouped item sections + search/filter (puzzles) ---- */
+      catalog: function (p) {
+        var cats = p.categories || [];
+        var chips = cats.map(function (c) { return '<button class="chip" type="button" data-cat="' + esc(c.key) + '">' + esc(c[L.state.lang] || c.en) + "</button>"; }).join("");
+        var allLabel = L.state.lang === "en" ? "All" : "全部";
+        var groups = cats.map(function (c) {
+          var its = (p.items || []).filter(function (it) { return it.category === c.key; });
+          if (!its.length) return "";
+          var cards = its.map(function (it, idx) {
+            var hay = (t(it.title) + " " + t(it.summary) + " " + (it.tags || []).map(tagStr).join(" ")).toLowerCase();
+            var tags = (it.tags || []).map(function (g) { return '<span class="tag">' + esc(tagStr(g)) + "</span>"; }).join("");
+            return '<article class="card' + (idx === 0 ? " card--feat" : "") + '" data-item data-slug="' + esc(it.slug) +
+              '" data-cat="' + esc(c.key) + '" data-hay="' + esc(hay) + '" tabindex="0" role="button" aria-label="' + esc(t(it.title)) + '">' +
+              '<h3 class="card__title">' + esc(t(it.title)) + "</h3>" +
+              '<p class="card__summary">' + esc(t(it.summary)) + "</p>" +
+              (tags ? '<div class="card__tags">' + tags + "</div>" : "") +
+              '<span class="card__play"><span class="material-symbols-rounded" aria-hidden="true">play_circle</span>' + (L.state.lang === "en" ? "play" : "試玩") + "</span></article>";
+          }).join("");
+          return '<section class="ed-catgroup reveal" data-catgroup="' + esc(c.key) + '">' +
+            '<header class="ed-cat__head"><h3>' + esc(c[L.state.lang] || c.en) + '</h3><span class="ed-cat__count">' + its.length + "</span></header>" +
+            '<div class="ed-catgrid">' + cards + "</div></section>";
+        }).join("");
+        return '<div class="ed-wrap ed-section">' + edHead(L.state.lang === "en" ? "Puzzle types" : "遊戲題型", p) +
+          '<div class="toolbar"><input id="search" class="search" type="search" autocomplete="off" ' +
+            'placeholder="' + (L.state.lang === "en" ? "Search puzzle types…" : "搜尋題型…") + '" aria-label="' + (L.state.lang === "en" ? "Search" : "搜尋") + '" />' +
+            '<div class="chips"><button class="chip chip--active" type="button" data-cat="">' + esc(allLabel) + "</button>" + chips + "</div></div>" +
+          '<p class="result-count" id="resultCount" aria-live="polite"></p>' +
+          '<div class="ed-catgroups">' + groups + "</div></div>";
+      },
+
+      /* ---- spec: grouped spec-sheet rows (locks) ---- */
+      spec: function (p) {
+        var cats = p.categories || [];
+        var groups = cats.map(function (c) {
+          var its = (p.items || []).filter(function (it) { return it.category === c.key; });
+          if (!its.length) return "";
+          var rows = its.map(function (it) {
+            var freq = (it.tags && it.tags[0]) ? tagStr(it.tags[0]) : "";
+            return '<li class="ed-spec" data-item data-slug="' + esc(it.slug) + '" tabindex="0" role="button" aria-label="' + esc(t(it.title)) + '">' +
+              '<span class="ed-spec__visual" aria-hidden="true"><span class="material-symbols-rounded">' + esc(it.icon || "lock") + "</span></span>" +
+              '<span class="ed-spec__name">' + esc(t(it.title)) + (freq ? '<span class="ed-spec__freq">' + esc(freq) + "</span>" : "") + "</span>" +
+              '<span class="ed-spec__sum">' + esc(t(it.summary)) + "</span></li>";
+          }).join("");
+          return '<section class="ed-cat reveal"><header class="ed-cat__head"><h3>' + esc(c[L.state.lang] || c.en) +
+            '</h3><span class="ed-cat__count">' + its.length + "</span></header><ul class=\"ed-specs\">" + rows + "</ul></section>";
+        }).join("");
+        return '<div class="ed-wrap ed-section">' + edHead(L.state.lang === "en" ? "Lock families" : "鎖具圖鑑", p) + groups + "</div>";
       }
     };
 
@@ -378,7 +557,42 @@
        WIRING (interactions) — keyed by layout, run after innerHTML is set
        ===================================================================== */
     var WIRE = {
-      hub: function () { animateCounters(); },
+      hub: function () { /* counters handled by the global postRender() hook */ },
+
+      home: function () { /* static editorial; reveal + count-up via postRender() */ },
+      editorial: function () { /* static editorial; reveal via postRender() */ },
+
+      spec: function (p) { wireDetailItems(p.items || []); },
+
+      catalog: function (p) {
+        wireDetailItems(p.items || []);
+        var search = document.getElementById("search");
+        var count = document.getElementById("resultCount");
+        var chips = [].slice.call(pageEl.querySelectorAll(".chip"));
+        var cards = [].slice.call(pageEl.querySelectorAll(".card[data-slug]"));
+        var groups = [].slice.call(pageEl.querySelectorAll(".ed-catgroup"));
+        var st = { q: "", cat: "" };
+        function apply() {
+          var n = 0;
+          cards.forEach(function (c) {
+            var show = (!st.cat || c.dataset.cat === st.cat) && (!st.q || (c.dataset.hay || "").indexOf(st.q) !== -1);
+            c.style.display = show ? "" : "none"; if (show) n++;
+          });
+          groups.forEach(function (g) {
+            var any = [].some.call(g.querySelectorAll(".card[data-slug]"), function (c) { return c.style.display !== "none"; });
+            g.style.display = any ? "" : "none";
+          });
+          if (count) count.textContent = n + (L.state.lang === "en" ? " type(s)" : " 種題型");
+        }
+        if (search) search.addEventListener("input", function () { st.q = this.value.trim().toLowerCase(); apply(); });
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            chips.forEach(function (c) { c.classList.remove("chip--active"); });
+            chip.classList.add("chip--active"); st.cat = chip.dataset.cat || ""; apply();
+          });
+        });
+        apply();
+      },
 
       gallery: function (p) {
         var grid = document.getElementById("grid");
@@ -838,6 +1052,36 @@
       teardowns.push(function () { io.disconnect(); });
     }
 
+    /* ---- post-render: count-up for [data-count] + scroll-reveal for .reveal ---- */
+    function postRender() {
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var nums = [].slice.call(pageEl.querySelectorAll("[data-count]"));
+      function run(el) {
+        var target = parseFloat(el.dataset.count) || 0, suffix = el.dataset.suffix || "", dur = 1100, start = null;
+        function step(ts) {
+          if (start === null) start = ts;
+          var pr = Math.min(1, (ts - start) / dur), eased = 1 - Math.pow(1 - pr, 3);
+          el.textContent = Math.round(target * eased) + suffix;
+          if (pr < 1) requestAnimationFrame(step); else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(step);
+      }
+      if (reduce) { nums.forEach(function (el) { el.textContent = (parseFloat(el.dataset.count) || 0) + (el.dataset.suffix || ""); }); }
+      else if (!("IntersectionObserver" in window)) { nums.forEach(run); }
+      else {
+        var io = new IntersectionObserver(function (ents) { ents.forEach(function (en) { if (en.isIntersecting) { run(en.target); io.unobserve(en.target); } }); }, { threshold: 0.4 });
+        nums.forEach(function (el) { io.observe(el); });
+        teardowns.push(function () { io.disconnect(); });
+      }
+      var rev = [].slice.call(pageEl.querySelectorAll(".reveal"));
+      if (reduce || !("IntersectionObserver" in window)) { rev.forEach(function (el) { el.classList.add("is-in"); }); }
+      else {
+        var io2 = new IntersectionObserver(function (ents, ob) { ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("is-in"); ob.unobserve(en.target); } }); }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+        rev.forEach(function (el) { io2.observe(el); });
+        teardowns.push(function () { io2.disconnect(); });
+      }
+    }
+
     /* =====================================================================
        RENDER the current page; re-runnable on language switch
        ===================================================================== */
@@ -851,6 +1095,7 @@
       pageEl.innerHTML = fn(p);
       var w = WIRE[p.layout];
       if (w) w(p);
+      postRender();
     }
 
     L.onLang(render);
