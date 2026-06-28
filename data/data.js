@@ -22,21 +22,69 @@ window.SITE_PAGES = [
 
   /* ===================== HOME / HUB ===================== */
   {
-    slug: "home", layout: "hub", icon: "home",
+    slug: "home", layout: "home", icon: "home",
     title:    { en: "Overview", zh: "總覽" },
-    subtitle: { en: "An organized guide to Taiwan's escape-room (real-life puzzle) culture: how the games work, the puzzles you will face, the locks you will crack, and the words insiders use.",
-                zh: "一份系統化的台灣密室逃脫(實境解謎)知識整理:遊戲怎麼玩、你會遇到哪些謎題、要破解哪些鎖,以及玩家圈內的行話。" },
-    stats: [
-      { value: 16, label: { en: "Puzzle types", zh: "遊戲題型" } },
-      { value: 16, label: { en: "Lock families", zh: "鎖具種類" } },
-      { value: 80, label: { en: "Venues nationwide (approx.)", zh: "全台店家概數" } },
-      { value: 24, label: { en: "Glossary terms", zh: "常用術語" } }
-    ]
+    subtitle: { en: "An organized guide to Taiwan's escape-room culture.", zh: "一份系統化的台灣密室逃脫知識整理。" },
+    hero: {
+      eyebrow: { en: "Taiwan · Real-life escape games", zh: "台灣 · 實境解謎" },
+      title:   { en: "Crack the design behind", zh: "拆解每一道鎖" },
+      accent:  { en: "every lock", zh: "背後的設計" },
+      lead:    { en: "16 puzzle types, 16 lock families, 49 playable mini-games, industry data and a studio map — an encyclopedia for players and creators.",
+                 zh: "16 種題型、16 類鎖具、49 個可試玩的小遊戲、產業數據與名店地圖——一座為玩家與創作者打造的密室百科。" },
+      stats: [
+        { value: 16, label: { en: "Puzzle types", zh: "遊戲題型" } },
+        { value: 49, label: { en: "Mini-games", zh: "互動小遊戲" } },
+        { value: 16, label: { en: "Lock families", zh: "鎖具分類" } },
+        { value: 34, label: { en: "Glossary terms", zh: "術語詞條" } }
+      ],
+      cta: [
+        { href: "puzzles.html", primary: true, label: { en: "Explore puzzle types", zh: "探索遊戲題型" } },
+        { href: "tips.html", label: { en: "Beginner's guide", zh: "新手攻略" } }
+      ]
+    },
+    highlights: [
+      { icon: "extension", badge: { en: "Puzzles", zh: "題型" },
+        title: { en: "16 puzzle types, 49 mini-games", zh: "16 種題型,49 個小遊戲" },
+        body:  { en: "From sweep-searching and Caesar ciphers to mazes, UV reveals and circuit mechanisms — every sub-technique has a playable demo right in the page.",
+                 zh: "從地毯式搜索、凱撒密碼,到迷宮、UV 顯影、電路機關——每個子技法都能在頁面裡直接試玩。" }, href: "puzzles.html" },
+      { icon: "lock", badge: { en: "Locks", zh: "鎖具" },
+        title: { en: "16 lock & trigger families", zh: "16 類鎖具與觸發機關" },
+        body:  { en: "What each lock looks like, how it opens, how many digits, and which clue feeds it — grouped by mechanism in a spec catalog.",
+                 zh: "每種鎖長怎樣、怎麼開、幾位數、對應哪種線索——依機構分類的規格圖鑑。" }, href: "locks.html" },
+      { icon: "theater_comedy", badge: { en: "Themes", zh: "主題" },
+        title: { en: "Genres, from micro-horror to theatre", zh: "從微恐到沉浸式劇場" },
+        body:  { en: "Horror, mystery, adventure, emotional, outdoor city-quests and immersive theatre — how Taiwan's scene styles its rooms.",
+                 zh: "恐怖、推理、冒險、情感、戶外城市解謎到沉浸式劇場——台灣如何打造各種主題。" }, href: "themes.html" },
+      { icon: "map", badge: { en: "Map", zh: "地圖" },
+        title: { en: "Studios across Taiwan", zh: "全台知名工作室地圖" },
+        body:  { en: "A searchable map of notable studios north to south, with their signature rooms — plus industry data and history.",
+                 zh: "可搜尋的全台名店地圖(北到南),附代表作,再加上產業數據與發展史。" }, href: "brands.html" }
+    ],
+    explore: [
+      { eyebrow: { en: "Core play", zh: "玩法核心" },
+        lead: { href: "puzzles.html", title: { en: "16 puzzle types", zh: "16 種遊戲題型" },
+                sub: { en: "Search, decode, mechanisms, story — each with a playable demo.", zh: "搜索、解碼、機關、劇情——每種都能試玩。" } },
+        links: [ { href: "locks.html", title: { en: "16 lock families", zh: "16 類鎖具圖鑑" } },
+                 { href: "glossary.html", title: { en: "Glossary & lingo", zh: "術語速查" } } ] },
+      { eyebrow: { en: "Culture & industry", zh: "文化與產業" },
+        lead: { href: "history.html", title: { en: "How it grew in Taiwan", zh: "台灣發展史" },
+                sub: { en: "From Flash room-escapes to immersive theatre with live actors.", zh: "從 Flash 逃脫到結合真人演員的沉浸式劇場。" } },
+        links: [ { href: "stats.html", title: { en: "Industry snapshot", zh: "產業數據" } },
+                 { href: "brands.html", title: { en: "Studio map", zh: "知名工作室地圖" } } ] },
+      { eyebrow: { en: "Play & practice", zh: "練功與測驗" },
+        lead: { href: "quiz.html", title: { en: "Pop quiz", zh: "隨堂測驗" },
+                sub: { en: "Ten questions on puzzles, locks and lingo — scored live.", zh: "十題題型、鎖具與術語測驗,即時計分。" } },
+        links: [ { href: "flashcards.html", title: { en: "Flashcards", zh: "解謎字卡" } },
+                 { href: "tips.html", title: { en: "Beginner's playbook", zh: "新手攻略" } } ] }
+    ],
+    quote: { text: { en: "A great escape room doesn't test your IQ — it briefly makes you believe another world is real.",
+                     zh: "好的密室不是考驗智商,而是讓人短暫相信另一個世界是真的。" },
+             cite: { en: "— from a veteran game-master interview", zh: "— 資深關主訪談" } }
   },
 
   /* ===================== PUZZLE TYPES (gallery) ===================== */
   {
-    slug: "puzzles", layout: "gallery", icon: "extension",
+    slug: "puzzles", layout: "catalog", icon: "extension",
     title:    { en: "Puzzle Types", zh: "遊戲題型圖鑑" },
     subtitle: { en: "16 puzzle archetypes you meet in escape rooms, grouped by the skill they test. Tap a card for how to crack it.",
                 zh: "密室逃脫常見的 16 種題型,依考驗的能力分類。點卡片看怎麼破解。" },
@@ -185,7 +233,7 @@ window.SITE_PAGES = [
 
   /* ===================== LOCK FAMILIES (gallery) ===================== */
   {
-    slug: "locks", layout: "gallery", icon: "lock",
+    slug: "locks", layout: "spec", icon: "lock",
     title:    { en: "Lock Families", zh: "鎖具圖鑑" },
     subtitle: { en: "16 kinds of locks and triggers you will crack — what they look like, how they open, and which clue feeds each one.",
                 zh: "你會破解的 16 類鎖具與觸發機關:長怎樣、怎麼開、對應到哪種線索。" },
@@ -331,7 +379,7 @@ window.SITE_PAGES = [
 
   /* ===================== THEME TYPES (gallery) ===================== */
   {
-    slug: "themes", layout: "gallery", icon: "theater_comedy",
+    slug: "themes", layout: "editorial", icon: "theater_comedy",
     title:    { en: "Theme Types", zh: "主題類型" },
     subtitle: { en: "The genres and formats of Taiwan's real-life games — from micro-horror to immersive theater and outdoor city quests.",
                 zh: "台灣實境遊戲的主題與形式——從微恐到沉浸式劇場,再到戶外城市解謎。" },
@@ -468,7 +516,15 @@ window.SITE_PAGES = [
       { date: { en: "2024–2026", zh: "2024–2026" },
         title: { en: "Theatrical turn with live NPCs", zh: "結合 NPC 的劇場化演進" },
         body:  { en: "High-end productions add live actors: Slipaway blends escape with immersive theater (two pro actors per session), Mr.Myth brought China-style light/sound + live-NPC horror to Taichung, and Dream Kingdom runs a puzzle-free 90-minute immersive show. The scene shifts from 'hardest puzzles' to 'best immersion'.",
-                 zh: "高規格製作加入真人演員:開溜製造所結合密室與沉浸式劇場(每場 2 名專業演員)、謎先生把中國式聲光電加真人 NPC 恐怖密室引進台中、夢遊王國推出全程 90 分鐘無謎題沉浸式演出。產業從「比解謎難度」轉向「比沉浸體驗」。" } }
+                 zh: "高規格製作加入真人演員:開溜製造所結合密室與沉浸式劇場(每場 2 名專業演員)、謎先生把中國式聲光電加真人 NPC 恐怖密室引進台中、夢遊王國推出全程 90 分鐘無謎題沉浸式演出。產業從「比解謎難度」轉向「比沉浸體驗」。" } },
+      { date: { en: "2025", zh: "2025" },
+        title: { en: "Market tops NT$1 billion", zh: "市場產值破 10 億" },
+        body:  { en: "Operators estimate Taiwan's offline reality-experience market (escape rooms + immersive theatre) topped NT$1 billion in 2025, with multi-million-dollar productions like Stupidparticle's 165-minute 'Yesterday Ward' (four story lines, eight endings) drawing replay-driven, non-traditional audiences.",
+                 zh: "業者估計台灣線下實境體驗(密室 + 沉浸式劇場)2025 年產值突破新台幣 10 億元;出現耗資千萬的大製作,如笨蛋工作室約 165 分鐘的《昨日病房》(4 條故事線、8 種結局),以多結局吸引重複遊玩與非傳統客群。" } },
+      { date: { en: "2022–2026", zh: "2022–2026" },
+        title: { en: "Industrialization & regulation push", zh: "產業化與法規推動" },
+        body:  { en: "A Taiwan Immersive Experience Association formed in 2022 and lobbied to fold immersive entertainment into the cultural-creative industries in 2023. Genres keep blurring with script-murder (LARP) and IP crossovers — while fuzzy definitions, high build costs and unclear fire/safety rules remain hurdles to scaling.",
+                 zh: "2022 年成立「台灣沉浸式體驗協會」,2023 年推動將沉浸式產業納入文創產業;類型持續與劇本殺(LARP)、IP 聯名融合——但定義模糊、建置成本高、消防/公安法規不明,仍是規模化的阻礙。" } }
     ]
   },
 
@@ -518,7 +574,8 @@ window.SITE_PAGES = [
                 zh: "台灣知名工作室取樣。圖釘為概略位置(行政區級),非精確地址。" },
     categories: [
       { key: "north",   en: "Northern Taiwan", zh: "北部" },
-      { key: "central", en: "Central Taiwan",  zh: "中部" }
+      { key: "central", en: "Central Taiwan",  zh: "中部" },
+      { key: "south",   en: "Southern Taiwan", zh: "南部" }
     ],
     places: [
       { slug: "stupidparticle", category: "north", lat: 25.047, lng: 121.517,
@@ -560,7 +617,47 @@ window.SITE_PAGES = [
       { slug: "mrmyth", category: "central", lat: 24.160, lng: 120.650,
         name: { en: "Mr.Myth", zh: "謎先生 Mr.Myth" },
         body: { en: "Brought China-style light/sound + live-NPC horror to Taichung in 2024 (e.g. the 'Haunted Toilet' series). Taichung (approx.).",
-                zh: "2024 把中國式聲光電加真人 NPC 恐怖密室引進台中(如「詭廁」系列)。台中(概略)。" } }
+                zh: "2024 把中國式聲光電加真人 NPC 恐怖密室引進台中(如「詭廁」系列)。台中(概略)。" } },
+      { slug: "rostart", category: "north", lat: 25.033, lng: 121.567,
+        name: { en: "Rostart Games", zh: "邏思起子" },
+        body: { en: "Scenery-rich adventure rooms; the long-running pirate hit 'One-eyed Jack'. Xinyi, Taipei (approx.).",
+                zh: "以場景與冒險主題著稱,長壽海盜尋寶作《獨眼傑克》。台北信義(概略)。" } },
+      { slug: "crazymi", category: "north", lat: 24.999, lng: 121.499,
+        name: { en: "Crazy Mi", zh: "瘋密工作室" },
+        body: { en: "Immersive light/sound with live dance performance; the Japanese-yokai bathhouse room 'Yotang'. Zhonghe, New Taipei (approx.).",
+                zh: "結合聲光與真人舞蹈表演的沉浸式體驗,日式妖怪湯屋《妖湯異聞錄》。新北中和(概略)。" } },
+      { slug: "a5studio", category: "north", lat: 24.989, lng: 121.314,
+        name: { en: "A5 Studio", zh: "A5 Studio 全員脫逃中" },
+        body: { en: "Taoyuan's first escape studio; theatre/film crew built theatre-grade sets. Taoyuan + Zhongli (approx.).",
+                zh: "桃園第一間密室工作室,劇場/電影團隊打造劇場級場景。桃園站前 + 中壢(概略)。" } },
+      { slug: "grimmtell", category: "north", lat: 24.804, lng: 120.971,
+        name: { en: "Grimm Tell", zh: "格林跳工作室" },
+        body: { en: "A Hsinchu must-play with rich storylines and beginner-friendly rooms like 'Moon-Thief's Notes'. Hsinchu (approx.).",
+                zh: "新竹必玩,劇情豐富,有新手友善的《盜月筆記》。新竹(概略)。" } },
+      { slug: "taog", category: "central", lat: 24.144, lng: 120.679,
+        name: { en: "TAOG (God's Absence)", zh: "神不在場" },
+        body: { en: "Self-styled 'Taiwan's largest', spanning Taichung / Tainan / Taipei; e.g. 'Heir of Fairy Tales'. Central Taichung (approx.).",
+                zh: "自述「全台最大」,跨台中/台南/台北,代表作《童話的繼承者》。台中中區(概略)。" } },
+      { slug: "escer", category: "central", lat: 24.151, lng: 120.664,
+        name: { en: "Escer", zh: "異世客" },
+        body: { en: "Founded by enthusiasts; 20+ big themes including VR and immersive theatre, three branches, 2-player start. Taichung (approx.).",
+                zh: "密室愛好者創立,20+ 大主題含 VR 與沉浸式劇場,三店、2 人可開。台中(概略)。" } },
+      { slug: "inme", category: "south", lat: 22.662, lng: 120.281,
+        name: { en: "In-me", zh: "癮密 In-me" },
+        body: { en: "Eerie micro-horror based on true events; debut 'Lingering Grudge' (2024) casts you as a coroner. Gushan, Kaohsiung (approx.).",
+                zh: "走陰森微恐、真實事件改編,首作《遺怨》(2024)扮法醫查命案。高雄鼓山(概略)。" } },
+      { slug: "onesplan", category: "south", lat: 22.690, lng: 120.302,
+        name: { en: "One's Plan", zh: "玩出計畫" },
+        body: { en: "Escape + script-murder with detailed storytelling; horror 'Inner Demon' and emotional 'Room 37'. Zuoying, Kaohsiung (approx.).",
+                zh: "密室 + 劇本殺,細膩說故事,恐怖《心魔》、情感《參樓柒號》。高雄左營(概略)。" } },
+      { slug: "boom", category: "south", lat: 22.640, lng: 120.320,
+        name: { en: "Mr. Boom", zh: "爆炸先生" },
+        body: { en: "Kaohsiung's most-visited, open latest (to midnight), great value. Sanmin, Kaohsiung (approx.).",
+                zh: "全高雄人氣最高、營業最晚(可至凌晨)、CP 值高。高雄三民(概略)。" } },
+      { slug: "jzj", category: "south", lat: 22.993, lng: 120.205,
+        name: { en: "Plot-in-Plot", zh: "計中計" },
+        body: { en: "A 'museum' world of many story rooms (e.g. 'Ghost Scheme'), since 2022. Tainan (approx.).",
+                zh: "「計中計博物館」世界觀的多故事主題(如《鬼計》),2022 起。台南(概略)。" } }
     ]
   },
 
@@ -599,7 +696,22 @@ window.SITE_PAGES = [
              zh: "可以。密室會混很多題型——搜索、觀察、團隊合作、動手機關——每個人都能貢獻。溝通與注意細節,比單純的解謎能力更重要。" } },
       { q: { en: "Can a 60-minute timer actually be finished?", zh: "60 分鐘真的解得完嗎?" },
         a: { en: "Often yes, with good teamwork — but escape rates vary by room and difficulty, and not finishing is normal and still fun. Treat the timer as part of the thrill, not a pass/fail exam.",
-             zh: "團隊合作好通常解得完——但過關率因房與難度而異,沒逃出來也很正常、一樣好玩。把計時當成刺激的一部分,而不是及格與否的考試。" } }
+             zh: "團隊合作好通常解得完——但過關率因房與難度而異,沒逃出來也很正常、一樣好玩。把計時當成刺激的一部分,而不是及格與否的考試。" } },
+      { q: { en: "Etiquette: what should I NOT do inside?", zh: "禮儀:進密室「不要」做什麼?" },
+        a: { en: "Don't force, yank or pry the set — puzzles are solved by observation and logic, never brute strength. Don't take any prop out (keys, notes and locks belong to the next team), don't photograph or film (it spoils the room), and never hit or shove the NPC actors even when scared.",
+             zh: "不要硬拉、硬扯、硬撬場景——解謎靠觀察與邏輯,不需要蠻力。不要帶走任何道具(鎖、鑰匙、紙條都屬於下一組),全程禁止拍照錄影(會暴雷),被嚇到也別對 NPC 演員動手。" } },
+      { q: { en: "What should I wear and bring?", zh: "該穿什麼、帶什麼?" },
+        a: { en: "Wear comfortable clothes you can crouch and climb in (skirts are awkward for some sets), and socks to protect the floor. Stow bags, phones and valuables in the locker, and take off dangling or glowing accessories that could fall into a mechanism.",
+             zh: "穿好活動、能蹲能爬的衣服(裙裝在某些橋段較不便),建議穿襪子保護場景地板。包包、手機、貴重物品寄進置物櫃,拿下會掉落或會發光的飾品,以免影響機關。" } },
+      { q: { en: "How do I pick a room by horror level?", zh: "怎麼依恐怖程度挑主題?" },
+        a: { en: "Rooms are usually rated normal / micro-horror / horror. If you scare easily, choose normal or micro-horror (often cute or Japanese-styled); full horror often has live NPCs chasing and jump scares. When booking for a group, cater to the most easily-scared member.",
+             zh: "主題多分「一般 / 微恐 / 恐怖」。怕鬼就選一般或微恐(常帶可愛或日式風);恐怖主題多有真人 NPC 追逐與嚇人橋段。揪團時遷就團裡最怕的人。" } },
+      { q: { en: "How do I pick by difficulty as a newcomer?", zh: "新手該怎麼挑難度?" },
+        a: { en: "Pick rooms tagged 'beginner-friendly' (about ★~★★) with generous hints — most modern rooms are intuitive and you'll rarely truly fail. Mechanism-showcase rooms with lots of gadgets are a fun first taste; save the gadget-dense, high-difficulty rooms for when you have a few games under your belt.",
+             zh: "選標「新手友善」(約 ★~★★)、提示寬鬆的主題——現在多數密室直觀、幾乎玩得完。機關表演型、道具多的主題很適合初體驗;高難度、機關量大的留到玩過幾場再挑戰。" } },
+      { q: { en: "What group size and how do I book?", zh: "幾人成行?怎麼預約?" },
+        a: { en: "Many rooms start at 2, but 3–5 is the sweet spot — more eyes, faster solving, more room. Big groups (9+) need a studio with large-format rooms. Sessions are private (no strangers), so always book ahead, and check spoiler-free reviews or the Escapebar platform before you commit.",
+             zh: "很多主題 2 人可開,但 3–5 人最甜——多雙眼睛、解得快、空間也夠;大團(9 人以上)要找有大型主題的工作室。多採包場制(不與陌生人併團),務必先預約;訂之前可看無雷心得或「逃脫吧」平台再決定。" } }
     ]
   },
 
@@ -680,7 +792,37 @@ window.SITE_PAGES = [
                zh: "台灣黑話:只顧著欣賞場景與機關、不實際解謎推進進度的行為。" } },
       { term: { en: "Hamster / Tank", zh: "倉鼠 / 坦(恐怖密室黑話)" },
         def: { en: "Horror-room slang: a 'hamster' scares easily; a 'tank' is fearless and shields teammates up front.",
-               zh: "恐怖主題黑話:「倉鼠」=容易被嚇的人;「坦」=不太怕、會擋在前面保護隊友的人。" } }
+               zh: "恐怖主題黑話:「倉鼠」=容易被嚇的人;「坦」=不太怕、會擋在前面保護隊友的人。" } },
+      { term: { en: "Private session (baochang)", zh: "包場制" },
+        def: { en: "Booking takes the whole session — you are never grouped with strangers, the Taiwan norm.",
+               zh: "預約即把整場包下,不會與陌生玩家併團,是台灣常態。" } },
+      { term: { en: "Spoiler / spoiler-free", zh: "暴雷 / 無雷" },
+        def: { en: "'Spoiler' = revealing puzzles or the ending; a 'spoiler-free' review shares without ruining the game.",
+               zh: "「暴雷」=劇透謎題或結局;「無雷心得」=不破壞體驗、不講解法的分享。" } },
+      { term: { en: "Golden Escape Award", zh: "金逃獎" },
+        def: { en: "Taiwan's annual selection/awards for real-life games.",
+               zh: "台灣實境遊戲的年度選拔 / 評選。" } },
+      { term: { en: "TPC club", zh: "TPC 社團" },
+        def: { en: "Taiwan's largest escape-room player community (the 'T.P.C. real-life escape club' on Facebook).",
+               zh: "台灣最大的密室逃脫玩家社群(Facebook「T.P.C. 真人實境密室逃脫俱樂部」)。" } },
+      { term: { en: "Mechanism lover", zh: "機關控" },
+        def: { en: "A player who favours mechanism-heavy rooms (sensors, circuits) over traditional padlocks.",
+               zh: "偏愛大量感應 / 電路機關、而非傳統鎖頭的玩家。" } },
+      { term: { en: "Linear vs sandbox", zh: "線性 vs 沙盒" },
+        def: { en: "Design terms: 'linear' = puzzles in fixed order; 'sandbox' (non-linear) = many threads run at once, good for splitting up.",
+               zh: "設計術語:「線性」=照順序一關一關;「沙盒」(非線性)=多線並進、人多好分工。" } },
+      { term: { en: "Immersive theatre", zh: "沉浸式劇場" },
+        def: { en: "Experience-driven rooms with close actor interaction and strong story immersion; some have no puzzles.",
+               zh: "強調演員近距離互動與劇情代入的體驗型房間,部分甚至無謎題。" } },
+      { term: { en: "Bao (a dud)", zh: "雷(地雷)" },
+        def: { en: "Player slang for a disappointing room — weak puzzles, story or production.",
+               zh: "玩家黑話:形容踩到不好玩的主題(謎題/劇情/製作差)。" } },
+      { term: { en: "Walkthrough (peek)", zh: "看攻略" },
+        def: { en: "Reading the solution to a room — a major spoiler that ruins the one-time experience; avoid before playing.",
+               zh: "去看某房的解法——嚴重暴雷、毀掉一次性體驗,玩之前千萬別看。" } },
+      { term: { en: "Clear time", zh: "通關時間" },
+        def: { en: "How long a team took to escape; bragging rights and a difficulty signal alongside escape rate.",
+               zh: "隊伍逃脫所花的時間;除了過關率,也是炫耀與難度的指標。" } }
     ]
   },
 
