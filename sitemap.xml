@@ -5,7 +5,43 @@
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://escape-room.peteraim.com/</loc>
+  </url>
+  <url>
     <loc>https://escape-room.peteraim.com/brands.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/brands.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/flashcards.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/glossary.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/history.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/locks.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/puzzles.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/quiz.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/stats.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/themes.html</loc>
+  </url>
+  <url>
+    <loc>https://escape-room.peteraim.com/en/tips.html</loc>
   </url>
   <url>
     <loc>https://escape-room.peteraim.com/flashcards.html</loc>
@@ -15,9 +51,6 @@
   </url>
   <url>
     <loc>https://escape-room.peteraim.com/history.html</loc>
-  </url>
-  <url>
-    <loc>https://escape-room.peteraim.com/</loc>
   </url>
   <url>
     <loc>https://escape-room.peteraim.com/locks.html</loc>
